@@ -34,7 +34,7 @@ fn main() {
 
     implement_vertex!(Vertex, position);
 
-    let circle_one = make_circle([0.0, 0.0], 0.5, 50);
+    let circles = vec![make_circle([0.0, 0.0], 0.4, 50), make_circle([0.7, 0.7], 0.2, 50)];
 
     let vertex_shader_src = r#"
         #version 140
@@ -57,19 +57,25 @@ fn main() {
     let program =
         glium::Program::from_source(&display, vertex_shader_src, fragment_shader_src, None)
             .unwrap();
-    let vertex_buffer = glium::VertexBuffer::new(&display, &circle_one).unwrap();
+
+    let mut vbuffers = vec![];
+    for circle in circles {
+        vbuffers.push(glium::VertexBuffer::new(&display, &circle).unwrap());
+    }
     let indices = glium::index::NoIndices(glium::index::PrimitiveType::TriangleFan);
 
     loop {
         let mut target = display.draw();
         target.clear_color(0.0, 0.0, 0.0, 1.0);
 
-        target.draw(&vertex_buffer,
-                  &indices,
-                  &program,
-                  &glium::uniforms::EmptyUniforms,
-                  &Default::default())
-            .unwrap();
+        for buffer in &vbuffers {
+            target.draw(buffer,
+                      &indices,
+                      &program,
+                      &glium::uniforms::EmptyUniforms,
+                      &Default::default())
+                .unwrap();
+        }
         target.finish().unwrap();
 
         for event in display.poll_events() {
