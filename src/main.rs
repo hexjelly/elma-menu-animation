@@ -27,14 +27,16 @@ fn make_circle(center: [f64; 2], radius: f64, triangle_count: u8) -> Vec<Vertex>
 
 fn main() {
     let display = glium::glutin::WindowBuilder::new()
-        .with_dimensions(500, 500)
+        .with_dimensions(640, 480)
         .with_title(format!("Elma Menu bounce balls deluxe"))
         .build_glium()
         .unwrap();
 
     implement_vertex!(Vertex, position);
 
-    let circles = vec![make_circle([0.0, 0.0], 0.4, 50), make_circle([0.7, 0.7], 0.2, 50)];
+    let circles = vec![make_circle([-0.375, 0.5], 0.075, 50), make_circle([0.0, 0.5], 0.09375, 50), make_circle([0.375, 0.5], 0.15625, 50),
+                       make_circle([-0.375, 0.0], 0.075, 50), make_circle([0.0, 0.0], 0.09375, 50), make_circle([0.375, 0.0], 0.15625, 50),
+                       make_circle([-0.375, -0.5], 0.075, 50), make_circle([0.0, -0.5], 0.09375, 50), make_circle([0.375, -0.5], 0.15625, 50)];
 
     let vertex_shader_src = r#"
         #version 140
