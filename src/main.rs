@@ -16,9 +16,11 @@ fn make_circle(center: [f64; 2], radius: f64, triangle_count: u8) -> Vec<Vertex>
 
     circle_vertices.push(Vertex { position: [center[0], center[1]] });
     for n in 0..triangle_count + 1 {
-        circle_vertices.push(Vertex { position: [center[0] + (radius * (n as f64 * PI2 / triangle_count as f64).cos()),
-                                                 center[1] + (radius * (n as f64 * PI2 / triangle_count as f64).sin())] });
-        }
+        circle_vertices.push(Vertex {
+            position: [center[0] + (radius * (n as f64 * PI2 / triangle_count as f64).cos()),
+                       center[1] + (radius * (n as f64 * PI2 / triangle_count as f64).sin())],
+        });
+    }
 
     circle_vertices
 }
@@ -26,7 +28,9 @@ fn make_circle(center: [f64; 2], radius: f64, triangle_count: u8) -> Vec<Vertex>
 fn main() {
     let display = glium::glutin::WindowBuilder::new()
         .with_dimensions(500, 500)
-        .with_title(format!("Elma Menu bounce balls deluxe")).build_glium().unwrap();
+        .with_title(format!("Elma Menu bounce balls deluxe"))
+        .build_glium()
+        .unwrap();
 
     implement_vertex!(Vertex, position);
 
@@ -50,7 +54,9 @@ fn main() {
         }
     "#;
 
-    let program = glium::Program::from_source(&display, vertex_shader_src, fragment_shader_src, None).unwrap();
+    let program =
+        glium::Program::from_source(&display, vertex_shader_src, fragment_shader_src, None)
+            .unwrap();
     let vertex_buffer = glium::VertexBuffer::new(&display, &circle_one).unwrap();
     let indices = glium::index::NoIndices(glium::index::PrimitiveType::TriangleFan);
 
@@ -58,14 +64,18 @@ fn main() {
         let mut target = display.draw();
         target.clear_color(0.0, 0.0, 0.0, 1.0);
 
-        target.draw(&vertex_buffer, &indices, &program, &glium::uniforms::EmptyUniforms,
-                        &Default::default()).unwrap();
+        target.draw(&vertex_buffer,
+                  &indices,
+                  &program,
+                  &glium::uniforms::EmptyUniforms,
+                  &Default::default())
+            .unwrap();
         target.finish().unwrap();
 
         for event in display.poll_events() {
             match event {
                 glium::glutin::Event::Closed => return,
-                _ => ()
+                _ => (),
             }
         }
     }
