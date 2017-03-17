@@ -9,6 +9,11 @@ struct Vertex {
     position: [f64; 2],
 }
 
+struct Ball {
+    position: Vertex,
+    velocity: [f64; 2],
+}
+
 const PI2: f64 = std::f64::consts::PI * 2.;
 
 fn make_circle(center: [f64; 2], radius: f64, triangle_count: u8) -> Vec<Vertex> {
@@ -38,23 +43,8 @@ fn main() {
                        make_circle([-0.375, 0.0], 0.075, 50), make_circle([0.0, 0.0], 0.09375, 50), make_circle([0.375, 0.0], 0.15625, 50),
                        make_circle([-0.375, -0.5], 0.075, 50), make_circle([0.0, -0.5], 0.09375, 50), make_circle([0.375, -0.5], 0.15625, 50)];
 
-    let vertex_shader_src = r#"
-        #version 140
-        in vec2 position;
-
-        void main() {
-            gl_Position = vec4(position, 0.0, 1.0);
-        }
-    "#;
-
-    let fragment_shader_src = r#"
-        #version 140
-        out vec4 color;
-
-        void main() {
-            color = vec4(0.49, 0.66, 0.46, 1);
-        }
-    "#;
+    let vertex_shader_src = include_str!("shaders/ball.vert");
+    let fragment_shader_src = include_str!("shaders/ball.frag");
 
     let program =
         glium::Program::from_source(&display, vertex_shader_src, fragment_shader_src, None)
