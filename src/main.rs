@@ -83,20 +83,16 @@ fn main() {
         let mut target = display.draw();
         target.clear_color(0.0, 0.0, 0.0, 1.0);
 
-        let mut vbuffers = vec![];
         for circle in &mut circles {
             circle.update();
-            vbuffers.push(glium::VertexBuffer::new(&display, &circle.render()).unwrap());
-        }
-
-        for buffer in &vbuffers {
-            target.draw(buffer,
-                      &indices,
-                      &program,
-                      &glium::uniforms::EmptyUniforms,
-                      &Default::default())
+            target.draw(&glium::VertexBuffer::new(&display, &circle.render()).unwrap(),
+                &indices,
+                &program,
+                &glium::uniforms::EmptyUniforms,
+                &Default::default())
                 .unwrap();
         }
+
         target.finish().unwrap();
 
         for event in display.poll_events() {
