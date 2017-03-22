@@ -30,6 +30,12 @@ impl Ball {
     }
 
     fn update(&mut self) {
+        if (self.vertex.position[0] - self.radius <= -1.) || (self.vertex.position[0] + self.radius >= 1.) {
+            self.velocity[0] *= -1.;
+        }
+        if (self.vertex.position[1] - self.radius <= -1.) || (self.vertex.position[1] + self.radius >= 1.) {
+            self.velocity[1] *= -1.;
+        }
         self.vertex.position[0] += self.velocity[0];
         self.vertex.position[1] += self.velocity[1];
     }
@@ -63,7 +69,7 @@ fn main() {
     let rand_range = Range::new(0.028648_f64, 89.848719_f64);
     let mut rng_gen = rand::thread_rng();
     let rand_degree = rand_range.ind_sample(&mut rng_gen) * std::f64::consts::PI / 180.0; // deg to rad
-    let mut circles = vec![Ball::new([-0.375, 0.5], 0.075, [rand_degree.cos() / 5000.0, rand_degree.sin() / 5000.0, 0.0]),
+    let mut circles = vec![Ball::new([-0.375, 0.5], 0.075, [rand_degree.cos() / 2000.0, rand_degree.sin() / 2000.0, 0.0]),
                         Ball::new([0.0, 0.5], 0.09375, [0.0, 0.0, 0.0]), Ball::new([0.375, 0.5], 0.15625, [0.0, 0.0, 0.0]),
                        Ball::new([-0.375, 0.0], 0.075, [0.0, 0.0, 0.0]), Ball::new([0.0, 0.0], 0.09375, [0.0, 0.0, 0.0]),
                        Ball::new([0.375, 0.0], 0.15625, [0.0, 0.0, 0.0]),
