@@ -1,17 +1,17 @@
 #[macro_use]
 extern crate glium;
-
 use glium::DisplayBuild;
 use glium::Surface;
 
 extern crate rand;
 use rand::distributions::{IndependentSample, Range};
 
-#[derive(Default, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone)]
 struct Vertex {
     position: [f64; 2],
 }
 
+#[derive(Debug)]
 struct Ball {
     vertex: Vertex,
     radius: f64,
@@ -31,10 +31,10 @@ impl Ball {
 
     fn update(&mut self) {
         // negate velocity if pos + radius is on the edges
-        if (self.vertex.position[0] - self.radius <= -1.) || (self.vertex.position[0] + self.radius >= 1.) {
+        if (self.vertex.position[0] - self.radius <= 0.0) || (self.vertex.position[0] + self.radius >= WIDTH as f64) {
             self.velocity[0] *= -1.;
         }
-        if (self.vertex.position[1] - self.radius <= -1.) || (self.vertex.position[1] + self.radius >= 1.) {
+        if (self.vertex.position[1] - self.radius <= 0.0) || (self.vertex.position[1] + self.radius >= HEIGHT as f64) {
             self.velocity[1] *= -1.;
         }
         // update position from current velocity
@@ -58,10 +58,12 @@ impl Ball {
 }
 
 const PI2: f64 = std::f64::consts::PI * 2.;
+const WIDTH: u32 = 640;
+const HEIGHT: u32 = 480;
 
 fn main() {
     let display = glium::glutin::WindowBuilder::new()
-        .with_dimensions(640, 480)
+        .with_dimensions(WIDTH, HEIGHT)
         .with_title(format!("Elma Menu bounce balls deluxe"))
         .build_glium()
         .unwrap();
@@ -73,15 +75,15 @@ fn main() {
     let rand_degree = rand_range.ind_sample(&mut rng_gen) * std::f64::consts::PI / 180.0; // deg to rad
     let mut circles = vec![];
 
-    circles.push(Ball::new([-0.375, 0.5], 0.075, [rand_degree.cos() / 2000.0, rand_degree.sin() / 2000.0, 0.0]));
-    circles.push(Ball::new([0.0, 0.5], 0.09375, [0.0002, 0.0002, 0.0]));
-    circles.push(Ball::new([0.375, 0.5], 0.15625, [0.0001, 0.0003, 0.0]));
-    circles.push(Ball::new([-0.375, 0.0], 0.075, [-0.0001, 0.0005, 0.0]));
-    circles.push(Ball::new([0.0, 0.0], 0.09375, [0.0, -0.0005, 0.0]));
-    circles.push(Ball::new([0.375, 0.0], 0.15625, [0.0008, -0.0001, 0.0]));
-    circles.push(Ball::new([-0.375, -0.5], 0.075, [-0.0005, 0.0001, 0.0]));
-    circles.push(Ball::new([0.0, -0.5], 0.09375, [0.0001, 0.0006, 0.0]));
-    circles.push(Ball::new([0.375, -0.5], 0.15625, [-0.0009, -0.00009, 0.0]));
+    circles.push(Ball::new([200.0, 120.0], 24.0, [rand_degree.cos() / 30.0, rand_degree.sin() / 30.0, 0.0]));
+    circles.push(Ball::new([320.0, 120.0], 30.0, [0.02, 0.02, 0.0]));
+    circles.push(Ball::new([440.0, 120.0], 50.0, [0.01, 0.03, 0.0]));
+    circles.push(Ball::new([200.0, 240.0], 24.0, [-0.01, 0.05, 0.0]));
+    circles.push(Ball::new([320.0, 240.0], 30.0, [0.0, -0.05, 0.0]));
+    circles.push(Ball::new([440.0, 240.0], 50.0, [0.08, -0.001, 0.0]));
+    circles.push(Ball::new([200.0, 360.0], 24.0, [-0.05, 0.001, 0.0]));
+    circles.push(Ball::new([320.0, 360.0], 30.0, [0.01, 0.06, 0.0]));
+    circles.push(Ball::new([440.0, 360.0], 50.0, [-0.09, -0.09, 0.0]));
 
     let vertex_shader_src = include_str!("shaders/ball.vert");
     let fragment_shader_src = include_str!("shaders/ball.frag");
