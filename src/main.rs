@@ -60,36 +60,26 @@ impl Ball {
 
 }
 
-fn collision(balls: &mut [Ball]) {
+fn collision_check(balls: &mut [Ball]) {
     for j in 0..balls.len() {
         for i in j+1..balls.len() {
-            // distxji = circleposx(j) - circleposx(i)
             let dist_x = balls[j].vertex.position[0] - balls[i].vertex.position[0];
-            // distyji = circleposy(j) - circleposy(i)
             let dist_y = balls[j].vertex.position[1] - balls[i].vertex.position[1];
-            // distance = (distxji * distxji) + (distyji * distyji)
-            let distance = dist_x.powf(2.0) + dist_y.powf(2.0);
+            let distance = dist_x.powi(2) + dist_y.powi(2);
 
             // if colliding
-            if distance <= (balls[i].radius + balls[j].radius).powf(2.0) {
-                // println!("{:?} vs {:?}", i, j);
-                // newvix = (circlevx(i) * distxji + circlevy(i) * distyji) / distance * distxji
-                // newviy = (circlevx(i) * distxji + circlevy(i) * distyji) / distance * distyji
+            if distance < (balls[i].radius + balls[j].radius).powi(2) {
+
                 let new_vi_x = (balls[i].velocity[0] * dist_x + balls[i].velocity[1] * dist_y) / distance * dist_x;
                 let new_vi_y = (balls[i].velocity[0] * dist_x + balls[i].velocity[1] * dist_y) / distance * dist_y;
 
-                // newvjx = (circlevx(j) * -(distxji) + circlevy(j) * -(distyji)) / distance * -(distxji)
-                // newvjy = (circlevx(j) * -(distxji) + circlevy(j) * -(distyji)) / distance * -(distyji)
                 let new_vj_x = (balls[j].velocity[0] * -(dist_x) + balls[j].velocity[1] * -(dist_y)) / distance * -(dist_x);
                 let new_vj_y = (balls[j].velocity[0] * -(dist_x) + balls[j].velocity[1] * -(dist_y)) / distance * -(dist_y);
 
-                // circlevx(i) = circlevx(i) + ((2 * circlemass(j)) / (circlemass(i) + circlemass(j))) * (newvjx - newvix)
                 balls[i].velocity[0] += ((2.0 * balls[j].mass) / (balls[i].mass + balls[j].mass)) * (new_vj_x - new_vi_x);
-                // circlevy(i) = circlevy(i) + ((2 * circlemass(j)) / (circlemass(i) + circlemass(j))) * (newvjy - newviy)
                 balls[i].velocity[1] += ((2.0 * balls[j].mass) / (balls[i].mass + balls[j].mass)) * (new_vj_y - new_vi_y);
-                // circlevx(j) = circlevx(j) + ((2 * circlemass(i)) / (circlemass(j) + circlemass(i))) * (newvix - newvjx)
+
                 balls[j].velocity[0] += ((2.0 * balls[i].mass) / (balls[j].mass + balls[i].mass)) * (new_vi_x - new_vj_x);
-                // circlevy(j) = circlevy(j) + ((2 * circlemass(i)) / (circlemass(j) + circlemass(i))) * (newviy - newvjy)
                 balls[j].velocity[1] += ((2.0 * balls[i].mass) / (balls[j].mass + balls[i].mass)) * (new_vi_y - new_vj_y);
             }
         }
@@ -111,10 +101,10 @@ fn main() {
 
     let rand_range = Range::new(0.028648_f64, 89.848719_f64);
     let mut rng_gen = rand::thread_rng();
-    let rand_degree = rand_range.ind_sample(&mut rng_gen) * std::f64::consts::PI / 180.0; // deg to rad
+    let rand_degree = rand_range.ind_sample(&mut rng_gen).to_radians();
     let mut circles = vec![];
 
-    circles.push(Ball::new([200.0, 120.0], 24.0, [rand_degree.cos() / 10.0, rand_degree.sin() / 10.0, 0.0]));
+    circles.push(Ball::new([200.0, 120.0], 24.0, [rand_degree.cos() / 5., rand_degree.sin() / 5., 0.0]));
     circles.push(Ball::new([320.0, 120.0], 30.0, [0.0, 0.0, 0.0]));
     circles.push(Ball::new([440.0, 120.0], 50.0, [0.0, 0.0, 0.0]));
     circles.push(Ball::new([200.0, 240.0], 24.0, [0.0, 0.0, 0.0]));
@@ -133,14 +123,11 @@ fn main() {
 
     let indices = glium::index::NoIndices(glium::index::PrimitiveType::TriangleFan);
 
-
-    println!("{:?}", &circles.len());
-
     loop {
         let mut target = display.draw();
         target.clear_color(0.0, 0.0, 0.0, 1.0);
 
-        collision(&mut circles);
+        collision_check(&mut circles);
 
         for circle in &mut circles {
             circle.update();
