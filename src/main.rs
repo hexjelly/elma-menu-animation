@@ -27,7 +27,7 @@ impl Ball {
             radius: radius,
             velocity: velocity,
             tris: 50,
-            mass: 1.0,
+            mass: 1.5,
         }
     }
 
@@ -62,7 +62,7 @@ impl Ball {
 
 fn collision(balls: &mut [Ball]) {
     for j in 0..balls.len() {
-        for i in 1..balls.len() {
+        for i in j+1..balls.len() {
             // distxji = circleposx(j) - circleposx(i)
             let dist_x = balls[j].vertex.position[0] - balls[i].vertex.position[0];
             // distyji = circleposy(j) - circleposy(i)
@@ -72,7 +72,7 @@ fn collision(balls: &mut [Ball]) {
 
             // if colliding
             if distance <= (balls[i].radius + balls[j].radius).powf(2.0) {
-                println!("{:?} vs {:?}", i, j);
+                // println!("{:?} vs {:?}", i, j);
                 // newvix = (circlevx(i) * distxji + circlevy(i) * distyji) / distance * distxji
                 // newviy = (circlevx(i) * distxji + circlevy(i) * distyji) / distance * distyji
                 let new_vi_x = (balls[i].velocity[0] * dist_x + balls[i].velocity[1] * dist_y) / distance * dist_x;
