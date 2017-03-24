@@ -26,8 +26,8 @@ impl Ball {
             vertex: Vertex { position: position },
             radius: radius,
             velocity: velocity,
-            tris: 50,
-            mass: 1.5,
+            tris: 100,
+            mass: radius / 10.,
         }
     }
 
@@ -39,9 +39,12 @@ impl Ball {
         if (self.vertex.position[1] - self.radius <= 0.0) || (self.vertex.position[1] + self.radius >= HEIGHT as f64) {
             self.velocity[1] *= -1.;
         }
+
         // update position from current velocity
         self.vertex.position[0] += self.velocity[0];
         self.vertex.position[1] += self.velocity[1];
+
+        //self.velocity[1] += 0.0005; //hyllymrrbrör grav amuse
     }
 
     fn render(&self) -> Vec<Vertex> {
